@@ -1,9 +1,10 @@
 ---
 id: task-001.04
 title: Create configuration loader and plugin
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-01 15:54'
+updated_date: '2025-11-01 23:22'
 labels:
   - plugin
   - configuration
