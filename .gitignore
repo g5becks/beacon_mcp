@@ -144,3 +144,6 @@ dist
 .svelte-kit
 
 dfm_src/
+
+# Wireit cache
+.wireit/

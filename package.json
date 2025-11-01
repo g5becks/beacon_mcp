@@ -4,7 +4,24 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "wireit",
+    "build": "wireit",
+    "typecheck": "wireit",
+    "test:unit": "wireit",
+    "test:file": "wireit",
+    "test:coverage": "wireit",
+    "test": "wireit",
+    "start": "wireit",
+    "dev": "wireit",
+    "dev:cli": "wireit",
+    "deps:tree": "wireit",
+    "deps:list": "wireit",
+    "lint": "wireit",
+    "fix": "wireit",
+    "lint:file": "wireit",
+    "lint:circular": "wireit",
+    "install": "pnpm install",
+    "install:frozen": "pnpm install --frozen-lockfile"
   },
   "keywords": [],
   "author": "",
@@ -13,32 +30,40 @@
   "devDependencies": {
     "@biomejs/biome": "2.3.2",
     "@commitlint/config-conventional": "^20.0.0",
+    "@ls-lint/ls-lint": "^2.3.1",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^24.9.2",
+    "@types/proper-lockfile": "^4.1.4",
     "backlog.md": "^1.18.5",
     "dependency-tree": "^11.2.0",
+    "dotenv-defaults": "^5.0.2",
     "jstoxml": "^7.0.1",
     "lefthook": "^2.0.2",
+    "madge": "^8.0.0",
     "repomix": "^1.8.0",
     "tsx": "^4.20.6",
     "type-fest": "^5.1.0",
     "typedoc": "^0.28.14",
     "typedoc-plugin-markdown": "^4.9.0",
     "typescript": "^5.9.3",
-    "ultracite": "6.1.0"
+    "ultracite": "6.1.0",
+    "wireit": "^0.14.12"
   },
   "dependencies": {
     "@duckdb/node-api": "1.4.1-r.4",
+    "@modelcontextprotocol/sdk": "^1.20.2",
     "@stricli/auto-complete": "^1.2.4",
     "@stricli/core": "^1.2.4",
     "avvio": "^9.1.0",
     "dedent": "^1.7.0",
     "dotenv": "^17.2.3",
+    "dotenv-expand": "^12.0.3",
     "file-stream-rotator": "^1.0.0",
     "fs-extra": "^11.3.2",
     "glob": "^11.0.3",
     "pino": "^10.1.0",
     "pino-abstract-transport": "^3.0.0",
+    "proper-lockfile": "^4.1.2",
     "quick-lru": "^7.3.0",
     "remark": "^15.0.1",
     "remark-frontmatter": "^5.0.0",
@@ -49,5 +74,159 @@
     "yaml": "^2.8.1",
     "yoctocolors": "^2.1.2",
     "zod": "^4.1.12"
+  },
+  "wireit": {
+    "clean": {
+      "command": "rm -rf dist",
+      "output": []
+    },
+    "build": {
+      "command": "pnpm exec tsc && chmod +x dist/cli/*.js",
+      "dependencies": [
+        "clean"
+      ],
+      "files": [
+        "src/**/*.ts",
+        "tsconfig.json",
+        "package.json"
+      ],
+      "output": [
+        "dist/**/*"
+      ]
+    },
+    "typecheck": {
+      "command": "pnpm exec tsc --noEmit",
+      "files": [
+        "src/**/*.ts",
+        "tsconfig.json"
+      ],
+      "output": []
+    },
+    "test:unit": {
+      "command": "tsx --test tests/unit/**/*.test.ts",
+      "env": {
+        "BEACON_ENV": "testing"
+      },
+      "files": [
+        "tests/unit/**/*.test.ts",
+        "src/**/*.ts"
+      ],
+      "output": []
+    },
+    "test:file": {
+      "command": "tsx --test \"$@\"",
+      "env": {
+        "BEACON_ENV": "testing"
+      },
+      "files": [
+        "tests/**/*.test.ts",
+        "src/**/*.ts"
+      ],
+      "output": []
+    },
+    "test:coverage": {
+      "command": "NODE_V8_COVERAGE=./coverage tsx --test --experimental-test-coverage tests/unit/**/*.test.ts",
+      "env": {
+        "BEACON_ENV": "testing"
+      },
+      "files": [
+        "tests/unit/**/*.test.ts",
+        "src/**/*.ts"
+      ],
+      "output": [
+        "coverage/**/*"
+      ]
+    },
+    "test": {
+      "dependencies": [
+        "test:unit"
+      ],
+      "output": []
+    },
+    "start": {
+      "command": "node dist/server/index.js",
+      "dependencies": [
+        "build"
+      ],
+      "files": [
+        "dist/server/**/*"
+      ],
+      "service": true
+    },
+    "dev": {
+      "command": "tsx watch src/server/index.ts",
+      "files": [
+        "src/server/**/*.ts",
+        "src/**/*.ts"
+      ],
+      "service": true
+    },
+    "dev:cli": {
+      "command": "tsx src/cli/index.ts",
+      "files": [
+        "src/cli/**/*.ts",
+        "src/**/*.ts"
+      ],
+      "output": []
+    },
+    "deps:tree": {
+      "command": "node scripts/deps.cjs",
+      "files": [
+        "scripts/deps.cjs",
+        "src/**/*.ts"
+      ],
+      "output": []
+    },
+    "deps:list": {
+      "command": "node scripts/deps.cjs --list",
+      "files": [
+        "scripts/deps.cjs",
+        "src/**/*.ts"
+      ],
+      "output": []
+    },
+    "lint": {
+      "command": "ultracite check .",
+      "files": [
+        "src/**/*",
+        "tests/**/*",
+        "*.md",
+        "*.json",
+        "*.js",
+        "*.ts"
+      ],
+      "output": []
+    },
+    "fix": {
+      "command": "ultracite check --write .",
+      "files": [
+        "src/**/*",
+        "tests/**/*",
+        "*.md",
+        "*.json",
+        "*.js",
+        "*.ts"
+      ],
+      "output": []
+    },
+    "lint:file": {
+      "command": "ultracite check \"$@\"",
+      "files": [
+        "src/**/*",
+        "tests/**/*",
+        "*.md",
+        "*.json",
+        "*.js",
+        "*.ts"
+      ],
+      "output": []
+    },
+    "lint:circular": {
+      "command": "pnpm exec madge --circular --extensions ts src/",
+      "files": [
+        "src/**/*.ts"
+      ],
+      "output": []
+    }
   }
 }
