@@ -1,9 +1,10 @@
 ---
 id: task-001
 title: 'Implement Beacon MCP: Path-based Knowledge Management Server'
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2025-11-01 15:50'
+updated_date: '2025-11-01 23:30'
 labels:
   - feature
   - mcp-server
