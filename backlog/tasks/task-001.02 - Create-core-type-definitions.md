@@ -1,9 +1,10 @@
 ---
 id: task-001.02
 title: Create core type definitions
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-01 15:54'
+updated_date: '2025-11-01 18:27'
 labels:
   - types
   - foundation
