@@ -1,0 +1,53 @@
+{
+  "name": "beacon_mcp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.20.0",
+  "devDependencies": {
+    "@biomejs/biome": "2.3.2",
+    "@commitlint/config-conventional": "^20.0.0",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^24.9.2",
+    "backlog.md": "^1.18.5",
+    "dependency-tree": "^11.2.0",
+    "jstoxml": "^7.0.1",
+    "lefthook": "^2.0.2",
+    "repomix": "^1.8.0",
+    "tsx": "^4.20.6",
+    "type-fest": "^5.1.0",
+    "typedoc": "^0.28.14",
+    "typedoc-plugin-markdown": "^4.9.0",
+    "typescript": "^5.9.3",
+    "ultracite": "6.1.0"
+  },
+  "dependencies": {
+    "@duckdb/node-api": "1.4.1-r.4",
+    "@stricli/auto-complete": "^1.2.4",
+    "@stricli/core": "^1.2.4",
+    "avvio": "^9.1.0",
+    "dedent": "^1.7.0",
+    "dotenv": "^17.2.3",
+    "file-stream-rotator": "^1.0.0",
+    "fs-extra": "^11.3.2",
+    "glob": "^11.0.3",
+    "pino": "^10.1.0",
+    "pino-abstract-transport": "^3.0.0",
+    "quick-lru": "^7.3.0",
+    "remark": "^15.0.1",
+    "remark-frontmatter": "^5.0.0",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0",
+    "unified": "^11.0.5",
+    "yaml": "^2.8.1",
+    "yoctocolors": "^2.1.2",
+    "zod": "^4.1.12"
+  }
+}

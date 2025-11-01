@@ -1,0 +1,7 @@
+[tasks.clean]
+description = "Clean build artifacts"
+run = "rm -rf dist"
+
+[tasks]
+description = "Runs backlog task manager"
+run = "pnpm exec backlog"
