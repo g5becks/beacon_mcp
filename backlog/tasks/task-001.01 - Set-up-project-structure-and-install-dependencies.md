@@ -1,9 +1,10 @@
 ---
 id: task-001.01
 title: Set up project structure and install dependencies
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-01 15:54'
+updated_date: '2025-11-01 18:27'
 labels:
   - setup
   - dependencies
