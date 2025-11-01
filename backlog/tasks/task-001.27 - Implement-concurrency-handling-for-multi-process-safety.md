@@ -4,6 +4,7 @@ title: Implement concurrency handling for multi-process safety
 status: To Do
 assignee: []
 created_date: '2025-11-01 16:31'
+updated_date: '2025-11-01 17:41'
 labels:
   - concurrency
   - database
@@ -52,10 +53,14 @@ Add concurrency handling to prevent conflicts when multiple MCP server instances
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Update and delete operations use retry logic with exponential backoff
-- [ ] #2 Transaction conflicts are detected and handled gracefully
-- [ ] #3 Maximum 3 retries with configurable delays
-- [ ] #4 Insert operations (storeKnowledge) work without retry (appends never conflict)
-- [ ] #5 Conflict errors are logged with context
-- [ ] #6 Documentation explains concurrency model and limitations
+- [ ] #1 Install proper-lockfile and @types/proper-lockfile dependencies
+- [ ] #2 Use createRequire to import proper-lockfile in ESM modules
+- [ ] #3 Wrap all write operations (store, update, delete) with file locks
+- [ ] #4 Configure lock options: stale=10000ms, retries=3
+- [ ] #5 Read operations do not use locks (concurrent reads are safe)
+- [ ] #6 Lock release happens in finally blocks to prevent orphaned locks
+
+- [ ] #7 Lock path uses database file path
+- [ ] #8 Error handling for lock acquisition failures
+- [ ] #9 Documentation explains when locks are used and why
 <!-- AC:END -->
