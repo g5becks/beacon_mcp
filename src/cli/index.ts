@@ -3,11 +3,13 @@ import { createRequire } from "node:module"
 import { buildApplication, buildRouteMap, run } from "@stricli/core"
 import type { PackageJson } from "type-fest"
 import { mcpCommand } from "./commands/mcp.js"
+import { storeCommand } from "./commands/store.js"
 import { cliLogger } from "./logger.js"
 
 const COMMAND_ROUTES = buildRouteMap({
   routes: {
     mcp: mcpCommand,
+    store: storeCommand,
   },
   docs: {
     brief: "Beacon MCP CLI",
