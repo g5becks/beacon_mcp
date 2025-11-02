@@ -1,9 +1,10 @@
 ---
 id: task-001.06
 title: Create database type definitions and interfaces
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-01 15:56'
+updated_date: '2025-11-02 00:52'
 labels:
   - types
   - database
