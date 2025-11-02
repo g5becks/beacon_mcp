@@ -1,4 +1,25 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "extends": ["ultracite/core", "ultracite/react", "ultracite/astro"]
+  "extends": ["ultracite/core"],
+  "files": {
+    "ignoreUnknown": false
+  },
+  "linter": {
+    "includes": ["src/**/*"]
+  },
+  "formatter": {
+    "includes": ["src/**/*"]
+  },
+  "javascript": {
+    "formatter": {
+      "semicolons": "asNeeded"
+    }
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  }
 }

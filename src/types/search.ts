@@ -5,7 +5,7 @@
  * and query operations in Beacon MCP.
  */
 
-import { z } from "zod";
+import { z } from "zod"
 import {
   DEFAULT_QUERY_TIMEOUT_MS,
   DEFAULT_SEARCH_LIMIT,
@@ -16,11 +16,11 @@ import {
   MAX_SEARCH_LIMIT,
   MAX_SNIPPET_LENGTH,
   MIN_SNIPPET_LENGTH,
-} from "./constants.js";
-import { KnowledgePathSchema, KnowledgeTypeSchema } from "./knowledge.js";
+} from "./constants.js"
+import { KnowledgePathSchema, KnowledgeTypeSchema } from "./knowledge.js"
 
 const includesDirectoryTraversal = (value: string): boolean =>
-  value.includes(DIRECTORY_TRAVERSAL_SEQUENCE);
+  value.includes(DIRECTORY_TRAVERSAL_SEQUENCE)
 
 // ============================================================================
 // Search Query Types
@@ -51,10 +51,10 @@ export const SearchQuerySchema = z
         .optional()
         .refine((pattern) => {
           if (!pattern) {
-            return true;
+            return true
           }
           // Basic pattern validation - more complex validation happens during matching
-          return !includesDirectoryTraversal(pattern);
+          return !includesDirectoryTraversal(pattern)
         }, "Pattern cannot contain directory traversal"),
 
       /**
@@ -118,8 +118,8 @@ export const SearchQuerySchema = z
   .refine(
     (query) => query.path || query.pattern || query.content,
     "At least one search criteria (path, pattern, or content) must be provided"
-  );
-export type SearchQuery = z.infer<typeof SearchQuerySchema>;
+  )
+export type SearchQuery = z.infer<typeof SearchQuerySchema>
 
 /**
  * Path-only search query
@@ -143,9 +143,9 @@ export const PathSearchQuerySchema = z
         .optional()
         .refine((pattern) => {
           if (!pattern) {
-            return true;
+            return true
           }
-          return !includesDirectoryTraversal(pattern);
+          return !includesDirectoryTraversal(pattern)
         }, "Pattern cannot contain directory traversal"),
 
       /**
@@ -196,8 +196,8 @@ export const PathSearchQuerySchema = z
   .refine(
     (query) => query.path || query.pattern,
     "At least one search criteria (path or pattern) must be provided"
-  );
-export type PathSearchQuery = z.infer<typeof PathSearchQuerySchema>;
+  )
+export type PathSearchQuery = z.infer<typeof PathSearchQuerySchema>
 
 /**
  * Content search query schema
@@ -258,8 +258,8 @@ export const ContentSearchQuerySchema = z.object(
   {
     error: "Content search query must contain a search query",
   }
-);
-export type ContentSearchQuery = z.infer<typeof ContentSearchQuerySchema>;
+)
+export type ContentSearchQuery = z.infer<typeof ContentSearchQuerySchema>
 
 // ============================================================================
 // Search Result Types
@@ -300,8 +300,8 @@ export const SearchResultEntrySchema = z.object({
    * Explanation of why this result matched
    */
   matchExplanation: z.string().optional(),
-});
-export type SearchResultEntry = z.infer<typeof SearchResultEntrySchema>;
+})
+export type SearchResultEntry = z.infer<typeof SearchResultEntrySchema>
 
 /**
  * Search results schema
@@ -343,8 +343,8 @@ export const SearchResultsSchema = z.object({
    * Search query that produced these results
    */
   query: SearchQuerySchema,
-});
-export type SearchResults = z.infer<typeof SearchResultsSchema>;
+})
+export type SearchResults = z.infer<typeof SearchResultsSchema>
 
 /**
  * Path search results schema
@@ -381,8 +381,8 @@ export const PathSearchResultsSchema = z.object({
    * Pattern that was matched (if applicable)
    */
   matchedPattern: z.string().optional(),
-});
-export type PathSearchResults = z.infer<typeof PathSearchResultsSchema>;
+})
+export type PathSearchResults = z.infer<typeof PathSearchResultsSchema>
 
 // ============================================================================
 // Glob Pattern Types
@@ -399,8 +399,8 @@ export const GlobPatternSchema = z
   .refine(
     (pattern) => !includesDirectoryTraversal(pattern),
     "Glob pattern cannot contain directory traversal"
-  );
-export type GlobPattern = z.infer<typeof GlobPatternSchema>;
+  )
+export type GlobPattern = z.infer<typeof GlobPatternSchema>
 
 /**
  * Glob pattern match result
@@ -433,8 +433,8 @@ export const GlobMatchSchema = z.object({
    * Whether this is an exact match
    */
   isExact: z.boolean(),
-});
-export type GlobMatch = z.infer<typeof GlobMatchSchema>;
+})
+export type GlobMatch = z.infer<typeof GlobMatchSchema>
 
 /**
  * Glob pattern compilation options
@@ -459,8 +459,8 @@ export const GlobOptionsSchema = z.object({
    * Maximum depth for recursive matching (**)
    */
   maxDepth: z.number().int().positive().default(MAX_ANCESTORS_DEPTH),
-});
-export type GlobOptions = z.infer<typeof GlobOptionsSchema>;
+})
+export type GlobOptions = z.infer<typeof GlobOptionsSchema>
 
 // ============================================================================
 // Query Builder Types
@@ -506,8 +506,8 @@ export const QueryBuilderConfigSchema = z.object({
    * Query timeout in milliseconds
    */
   timeout: z.number().int().positive().default(DEFAULT_QUERY_TIMEOUT_MS),
-});
-export type QueryBuilderConfig = z.infer<typeof QueryBuilderConfigSchema>;
+})
+export type QueryBuilderConfig = z.infer<typeof QueryBuilderConfigSchema>
 
 /**
  * Built SQL query with parameters
@@ -539,8 +539,8 @@ export const BuiltQuerySchema = z.object({
    * Whether the query uses full-text search
    */
   usesFullTextSearch: z.boolean(),
-});
-export type BuiltQuery = z.infer<typeof BuiltQuerySchema>;
+})
+export type BuiltQuery = z.infer<typeof BuiltQuerySchema>
 
 // ============================================================================
 // Search Statistics Types
@@ -586,5 +586,5 @@ export const SearchStatsSchema = z.object({
    * Memory usage in bytes
    */
   memoryUsage: z.number().int().min(0),
-});
-export type SearchStats = z.infer<typeof SearchStatsSchema>;
+})
+export type SearchStats = z.infer<typeof SearchStatsSchema>

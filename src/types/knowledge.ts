@@ -5,7 +5,7 @@
  * path-based knowledge organization in Beacon MCP.
  */
 
-import { z } from "zod";
+import { z } from "zod"
 import {
   KNOWLEDGE_TYPES,
   MAX_ANCESTORS_DEPTH,
@@ -18,7 +18,7 @@ import {
   MAX_TITLE_LENGTH,
   MIN_STRING_LENGTH,
   PATH_SEPARATOR,
-} from "./constants.js";
+} from "./constants.js"
 
 // ============================================================================
 // Knowledge Entry Types
@@ -34,8 +34,8 @@ import {
  */
 export const KnowledgeTypeSchema = z.enum(KNOWLEDGE_TYPES, {
   error: "Knowledge type must be one of: rule, decision, or document",
-});
-export type KnowledgeType = z.infer<typeof KnowledgeTypeSchema>;
+})
+export type KnowledgeType = z.infer<typeof KnowledgeTypeSchema>
 
 /**
  * Knowledge entry path schema
@@ -58,12 +58,12 @@ export const KnowledgePathSchema = z
     "Path must contain only alphanumeric characters, hyphens, underscores, and forward slashes"
   )
   .refine((path) => {
-    const segments = path.split(PATH_SEPARATOR).filter(Boolean);
+    const segments = path.split(PATH_SEPARATOR).filter(Boolean)
     return segments.every(
       (segment) => segment.length <= MAX_PATH_SEGMENT_LENGTH
-    );
-  }, `Each path segment cannot exceed ${MAX_PATH_SEGMENT_LENGTH} characters`);
-export type KnowledgePath = z.infer<typeof KnowledgePathSchema>;
+    )
+  }, `Each path segment cannot exceed ${MAX_PATH_SEGMENT_LENGTH} characters`)
+export type KnowledgePath = z.infer<typeof KnowledgePathSchema>
 
 /**
  * Knowledge entry title schema
@@ -74,8 +74,8 @@ export const KnowledgeTitleSchema = z
   .string()
   .min(MIN_STRING_LENGTH, "Title cannot be empty")
   .max(MAX_TITLE_LENGTH, `Title cannot exceed ${MAX_TITLE_LENGTH} characters`)
-  .trim();
-export type KnowledgeTitle = z.infer<typeof KnowledgeTitleSchema>;
+  .trim()
+export type KnowledgeTitle = z.infer<typeof KnowledgeTitleSchema>
 
 /**
  * Knowledge entry content schema
@@ -88,8 +88,8 @@ export const KnowledgeContentSchema = z
   .max(
     MAX_CONTENT_LENGTH,
     `Content cannot exceed ${MAX_CONTENT_LENGTH} characters`
-  );
-export type KnowledgeContent = z.infer<typeof KnowledgeContentSchema>;
+  )
+export type KnowledgeContent = z.infer<typeof KnowledgeContentSchema>
 
 /**
  * Metadata entry schema
@@ -105,8 +105,8 @@ export const MetadataEntrySchema = z.tuple([
       `Metadata key cannot exceed ${MAX_METADATA_KEY_LENGTH} characters`
     ),
   z.unknown(),
-]);
-export type MetadataEntry = z.infer<typeof MetadataEntrySchema>;
+])
+export type MetadataEntry = z.infer<typeof MetadataEntrySchema>
 
 /**
  * Knowledge metadata schema
@@ -135,12 +135,12 @@ export const KnowledgeMetadataSchema = z
   .refine(
     (metadata) =>
       Object.entries(metadata).every(([, value]) => {
-        const valueStr = JSON.stringify(value);
-        return valueStr.length <= MAX_METADATA_VALUE_LENGTH;
+        const valueStr = JSON.stringify(value)
+        return valueStr.length <= MAX_METADATA_VALUE_LENGTH
       }),
     `Metadata values cannot exceed ${MAX_METADATA_VALUE_LENGTH} characters when serialized`
-  );
-export type KnowledgeMetadata = z.infer<typeof KnowledgeMetadataSchema>;
+  )
+export type KnowledgeMetadata = z.infer<typeof KnowledgeMetadataSchema>
 
 // ============================================================================
 // Knowledge Entry Schemas
@@ -211,8 +211,8 @@ export const KnowledgeEntrySchema = z.object(
     error:
       "Knowledge entry must be a valid object with required fields and proper types",
   }
-);
-export type KnowledgeEntry = z.infer<typeof KnowledgeEntrySchema>;
+)
+export type KnowledgeEntry = z.infer<typeof KnowledgeEntrySchema>
 
 /**
  * Input schema for creating new knowledge entries
@@ -250,8 +250,8 @@ export const StoreKnowledgeInputSchema = z.object(
     error:
       "Store knowledge input must contain valid path, type, title, and content",
   }
-);
-export type StoreKnowledgeInput = z.infer<typeof StoreKnowledgeInputSchema>;
+)
+export type StoreKnowledgeInput = z.infer<typeof StoreKnowledgeInputSchema>
 
 /**
  * Input schema for updating existing knowledge entries
@@ -288,8 +288,8 @@ export const UpdateKnowledgeInputSchema = z.object(
   {
     error: "Update knowledge input must contain valid fields to update",
   }
-);
-export type UpdateKnowledgeInput = z.infer<typeof UpdateKnowledgeInputSchema>;
+)
+export type UpdateKnowledgeInput = z.infer<typeof UpdateKnowledgeInputSchema>
 
 // ============================================================================
 // Path Resolution Types
@@ -325,8 +325,8 @@ export const PathResolutionSchema = z.object({
    * Final segment name
    */
   name: z.string(),
-});
-export type PathResolution = z.infer<typeof PathResolutionSchema>;
+})
+export type PathResolution = z.infer<typeof PathResolutionSchema>
 
 /**
  * Path ancestor calculation options
@@ -346,8 +346,8 @@ export const PathAncestorOptionsSchema = z.object({
    * Whether to include the full path in ancestors
    */
   includeSelf: z.boolean().default(false),
-});
-export type PathAncestorOptions = z.infer<typeof PathAncestorOptionsSchema>;
+})
+export type PathAncestorOptions = z.infer<typeof PathAncestorOptionsSchema>
 
 // ============================================================================
 // Utility Types
@@ -362,7 +362,7 @@ export type KnowledgeEntryPublic = Omit<
   KnowledgeEntry,
   // Remove internal fields that shouldn't be exposed in API responses
   "ancestors" // These are calculated and used internally
->;
+>
 
 /**
  * Knowledge entry summary for list views
@@ -372,7 +372,7 @@ export type KnowledgeEntryPublic = Omit<
 export type KnowledgeEntrySummary = Pick<
   KnowledgeEntry,
   "id" | "path" | "type" | "title" | "createdAt" | "updatedAt"
->;
+>
 
 /**
  * Path match result
@@ -380,10 +380,10 @@ export type KnowledgeEntrySummary = Pick<
  * Represents a path that matches a given pattern or query.
  */
 export type PathMatch = {
-  path: string;
-  confidence: number;
-  matchedSegments: string[];
-};
+  path: string
+  confidence: number
+  matchedSegments: string[]
+}
 
 /**
  * Knowledge statistics
@@ -391,9 +391,9 @@ export type PathMatch = {
  * Aggregate statistics about the knowledge base.
  */
 export type KnowledgeStats = {
-  totalEntries: number;
-  entriesByType: Record<KnowledgeType, number>;
-  entriesByDepth: Record<number, number>;
-  lastUpdated: number;
-  deepestPath: string;
-};
+  totalEntries: number
+  entriesByType: Record<KnowledgeType, number>
+  entriesByDepth: Record<number, number>
+  lastUpdated: number
+  deepestPath: string
+}

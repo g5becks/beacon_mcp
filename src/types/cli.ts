@@ -4,11 +4,11 @@
 
 export type CliConfig = {
   /** Optional project identifier used for scoping resolved paths */
-  project?: string;
+  project?: string
   /** Optional explicit working directory */
-  cwd?: string;
+  cwd?: string
   /** Optional dotenv file path loaded with highest precedence */
-  envFile?: string;
+  envFile?: string
   /** Override for log level */
-  logLevel?: string;
-};
+  logLevel?: string
+}

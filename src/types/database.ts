@@ -4,18 +4,18 @@
  * Types and interfaces for database operations in Beacon MCP.
  */
 
-import type { Logger } from "pino";
+import type { Logger } from "pino"
 import type {
   KnowledgeEntry,
   StoreKnowledgeInput,
   UpdateKnowledgeInput,
-} from "./knowledge.js";
+} from "./knowledge.js"
 import type {
   PathSearchQuery,
   PathSearchResults,
   SearchQuery,
   SearchResults,
-} from "./search.js";
+} from "./search.js"
 
 /**
  * Database configuration interface
@@ -24,10 +24,10 @@ import type {
  */
 export type DatabaseConfig = {
   /** Database file path */
-  location: string;
+  location: string
   /** Logger instance */
-  logger: Logger;
-};
+  logger: Logger
+}
 
 /**
  * Database interface
@@ -43,7 +43,7 @@ export type Database = {
    * @param entry - Knowledge entry to store
    * @returns Stored knowledge entry with generated ID and timestamps
    */
-  storeKnowledge(entry: StoreKnowledgeInput): Promise<KnowledgeEntry>;
+  storeKnowledge(entry: StoreKnowledgeInput): Promise<KnowledgeEntry>
 
   /**
    * Update an existing knowledge entry
@@ -55,14 +55,14 @@ export type Database = {
   updateKnowledge(
     id: string,
     updates: UpdateKnowledgeInput
-  ): Promise<KnowledgeEntry>;
+  ): Promise<KnowledgeEntry>
 
   /**
    * Delete a knowledge entry by ID
    *
    * @param id - ID of the entry to delete
    */
-  deleteKnowledge(id: string): Promise<void>;
+  deleteKnowledge(id: string): Promise<void>
 
   /**
    * Get a knowledge entry by ID
@@ -70,7 +70,7 @@ export type Database = {
    * @param id - ID of the entry to retrieve
    * @returns Knowledge entry or null if not found
    */
-  getKnowledge(id: string): Promise<KnowledgeEntry | null>;
+  getKnowledge(id: string): Promise<KnowledgeEntry | null>
 
   /**
    * Search knowledge entries by path
@@ -78,7 +78,7 @@ export type Database = {
    * @param query - Path search criteria
    * @returns Matching knowledge entries
    */
-  searchByPath(query: PathSearchQuery): Promise<PathSearchResults>;
+  searchByPath(query: PathSearchQuery): Promise<PathSearchResults>
 
   /**
    * Search knowledge entries by content
@@ -86,10 +86,10 @@ export type Database = {
    * @param query - Content search criteria
    * @returns Search results with relevance scoring
    */
-  searchByContent(query: SearchQuery): Promise<SearchResults>;
+  searchByContent(query: SearchQuery): Promise<SearchResults>
 
   /**
    * Close database connection and cleanup resources
    */
-  dispose(): Promise<void>;
-};
+  dispose(): Promise<void>
+}

@@ -5,22 +5,18 @@
  * the Path-based Knowledge Management Server.
  */
 
-import type { Logger } from "./logger.js";
+import type { Logger } from "./logger.js"
 
-const CONNECTION_ERROR_PATTERNS = ["connection", "unable to open"] as const;
+const CONNECTION_ERROR_PATTERNS = ["connection", "unable to open"] as const
 const CONCURRENCY_ERROR_PATTERNS = [
   "lock",
   "concurrent",
   "busy",
   "locked",
-] as const;
-const CONSTRAINT_ERROR_PATTERNS = [
-  "constraint",
-  "duplicate",
-  "unique",
-] as const;
-const SCHEMA_ERROR_PATTERNS = ["schema", "column", "table", "no such"] as const;
-const SYNTAX_ERROR_PATTERNS = ["syntax", "parse"] as const;
+] as const
+const CONSTRAINT_ERROR_PATTERNS = ["constraint", "duplicate", "unique"] as const
+const SCHEMA_ERROR_PATTERNS = ["schema", "column", "table", "no such"] as const
+const SYNTAX_ERROR_PATTERNS = ["syntax", "parse"] as const
 
 /**
  * Standardized error codes for Beacon MCP operations
@@ -63,7 +59,7 @@ export type ErrorCode =
   | "QUERY_ERROR"
   | "MIGRATION_ERROR"
   | "LOCK_ACQUISITION_ERROR"
-  | "INTERNAL_ERROR";
+  | "INTERNAL_ERROR"
 
 /**
  * Base error class for all Beacon MCP errors
@@ -72,8 +68,8 @@ export type ErrorCode =
  * consistent error structure and behavior.
  */
 export class BeaconError extends Error {
-  readonly code: ErrorCode;
-  readonly details?: Record<string, unknown>;
+  readonly code: ErrorCode
+  readonly details?: Record<string, unknown>
 
   /**
    * Creates a new BeaconError
@@ -87,11 +83,11 @@ export class BeaconError extends Error {
     message: string,
     details?: Record<string, unknown>
   ) {
-    super(message);
-    this.name = "BeaconError";
-    this.code = code;
-    this.details = details;
-    Error.captureStackTrace(this, this.constructor);
+    super(message)
+    this.name = "BeaconError"
+    this.code = code
+    this.details = details
+    Error.captureStackTrace(this, this.constructor)
   }
 
   /**
@@ -101,8 +97,8 @@ export class BeaconError extends Error {
    * @returns Formatted error message for MCP responses
    */
   toMCPMessage(): string {
-    const detailsStr = this.details ? ` (${JSON.stringify(this.details)})` : "";
-    return `${this.code}: ${this.message}${detailsStr}`;
+    const detailsStr = this.details ? ` (${JSON.stringify(this.details)})` : ""
+    return `${this.code}: ${this.message}${detailsStr}`
   }
 }
 
@@ -121,8 +117,8 @@ export class BeaconError extends Error {
  */
 export class ValidationError extends BeaconError {
   constructor(message: string, details?: Record<string, unknown>) {
-    super("INVALID_INPUT", message, details);
-    this.name = "ValidationError";
+    super("INVALID_INPUT", message, details)
+    this.name = "ValidationError"
   }
 }
 
@@ -142,8 +138,8 @@ export class InvalidPathError extends BeaconError {
     super("INVALID_PATH", `Invalid knowledge path: ${path}. ${reason}`, {
       path,
       reason,
-    });
-    this.name = "InvalidPathError";
+    })
+    this.name = "InvalidPathError"
   }
 }
 
@@ -162,10 +158,10 @@ export class KnowledgeNotFoundError extends BeaconError {
     const message =
       type === "id"
         ? `Knowledge entry not found with ID: ${identifier}`
-        : `Knowledge entry not found at path: ${identifier}`;
+        : `Knowledge entry not found at path: ${identifier}`
 
-    super("KNOWLEDGE_NOT_FOUND", message, { identifier, type });
-    this.name = "KnowledgeNotFoundError";
+    super("KNOWLEDGE_NOT_FOUND", message, { identifier, type })
+    this.name = "KnowledgeNotFoundError"
   }
 }
 
@@ -181,8 +177,8 @@ export class KnowledgeNotFoundError extends BeaconError {
  */
 export class PathNotFoundError extends BeaconError {
   constructor(path: string) {
-    super("PATH_NOT_FOUND", `Path not found: ${path}`, { path });
-    this.name = "PathNotFoundError";
+    super("PATH_NOT_FOUND", `Path not found: ${path}`, { path })
+    this.name = "PathNotFoundError"
   }
 }
 
@@ -204,8 +200,8 @@ export class KnowledgeAlreadyExistsError extends BeaconError {
       {
         path,
       }
-    );
-    this.name = "KnowledgeAlreadyExistsError";
+    )
+    this.name = "KnowledgeAlreadyExistsError"
   }
 }
 
@@ -226,8 +222,8 @@ export class KnowledgeAlreadyExistsError extends BeaconError {
  */
 export class DatabaseError extends BeaconError {
   constructor(message: string, cause?: Error) {
-    super("DATABASE_ERROR", message, { cause: cause?.message });
-    this.name = "DatabaseError";
+    super("DATABASE_ERROR", message, { cause: cause?.message })
+    this.name = "DatabaseError"
   }
 }
 
@@ -244,8 +240,8 @@ export class DatabaseError extends BeaconError {
  */
 export class QueryError extends BeaconError {
   constructor(message: string, details?: Record<string, unknown>) {
-    super("QUERY_ERROR", message, details);
-    this.name = "QueryError";
+    super("QUERY_ERROR", message, details)
+    this.name = "QueryError"
   }
 }
 
@@ -264,8 +260,8 @@ export class QueryError extends BeaconError {
  */
 export class MigrationError extends BeaconError {
   constructor(message: string, details?: Record<string, unknown>) {
-    super("MIGRATION_ERROR", message, details);
-    this.name = "MigrationError";
+    super("MIGRATION_ERROR", message, details)
+    this.name = "MigrationError"
   }
 }
 
@@ -286,8 +282,8 @@ export class MigrationError extends BeaconError {
  */
 export class ConcurrencyError extends BeaconError {
   constructor(message: string, details?: Record<string, unknown>) {
-    super("CONCURRENCY_ERROR", message, details);
-    this.name = "ConcurrencyError";
+    super("CONCURRENCY_ERROR", message, details)
+    this.name = "ConcurrencyError"
   }
 }
 
@@ -306,8 +302,8 @@ export class ConcurrencyError extends BeaconError {
  */
 export class LockAcquisitionError extends BeaconError {
   constructor(message: string, details?: Record<string, unknown>) {
-    super("LOCK_ACQUISITION_ERROR", message, details);
-    this.name = "LockAcquisitionError";
+    super("LOCK_ACQUISITION_ERROR", message, details)
+    this.name = "LockAcquisitionError"
   }
 }
 
@@ -326,8 +322,8 @@ export class LockAcquisitionError extends BeaconError {
  */
 export class ConfigError extends BeaconError {
   constructor(message: string, details?: Record<string, unknown>) {
-    super("INVALID_CONFIG", message, details);
-    this.name = "ConfigError";
+    super("INVALID_CONFIG", message, details)
+    this.name = "ConfigError"
   }
 }
 
@@ -344,8 +340,8 @@ export class PathResolutionError extends BeaconError {
         reason,
         cause: cause instanceof Error ? cause.message : cause,
       }
-    );
-    this.name = "PathResolutionError";
+    )
+    this.name = "PathResolutionError"
   }
 }
 
@@ -361,8 +357,8 @@ export class PluginInitError extends BeaconError {
         plugin: pluginName,
         cause: cause instanceof Error ? cause.message : cause,
       }
-    );
-    this.name = "PluginInitError";
+    )
+    this.name = "PluginInitError"
   }
 }
 
@@ -378,13 +374,13 @@ export class PluginDependencyError extends BeaconError {
         plugin: pluginName,
         dependency: dependencyName,
       }
-    );
-    this.name = "PluginDependencyError";
+    )
+    this.name = "PluginDependencyError"
   }
 }
 
 const includesAny = (value: string, patterns: readonly string[]): boolean =>
-  patterns.some((pattern) => value.includes(pattern));
+  patterns.some((pattern) => value.includes(pattern))
 
 /**
  * Handles DuckDB errors with better error messages and structured error types.
@@ -401,14 +397,14 @@ export function handleDuckDBError(error: unknown, logger?: Logger): Error {
       stack: error instanceof Error ? error.stack : undefined,
     },
     "DuckDB error occurred"
-  );
+  )
 
   // Handle specific DuckDB error patterns
   if (error instanceof Error) {
-    const message = error.message.toLowerCase();
+    const message = error.message.toLowerCase()
 
     if (includesAny(message, CONNECTION_ERROR_PATTERNS)) {
-      return new DatabaseError("Failed to connect to database", error);
+      return new DatabaseError("Failed to connect to database", error)
     }
 
     if (includesAny(message, CONCURRENCY_ERROR_PATTERNS)) {
@@ -417,7 +413,7 @@ export function handleDuckDBError(error: unknown, logger?: Logger): Error {
         {
           cause: error.message,
         }
-      );
+      )
     }
 
     if (includesAny(message, CONSTRAINT_ERROR_PATTERNS)) {
@@ -425,27 +421,27 @@ export function handleDuckDBError(error: unknown, logger?: Logger): Error {
         "KNOWLEDGE_ALREADY_EXISTS",
         "Knowledge entry already exists",
         { cause: error.message }
-      );
+      )
     }
 
     if (includesAny(message, SCHEMA_ERROR_PATTERNS)) {
-      return new QueryError("Database schema error", { cause: error.message });
+      return new QueryError("Database schema error", { cause: error.message })
     }
 
     if (includesAny(message, SYNTAX_ERROR_PATTERNS)) {
-      return new QueryError("SQL syntax error", { cause: error.message });
+      return new QueryError("SQL syntax error", { cause: error.message })
     }
 
     // Generic database error
     return new DatabaseError(
       `Database operation failed: ${error.message}`,
       error
-    );
+    )
   }
 
   // Unknown error type
   return new BeaconError(
     "INTERNAL_ERROR",
     `An unknown error occurred: ${String(error)}`
-  );
+  )
 }
