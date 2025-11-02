@@ -1,9 +1,10 @@
 ---
 id: task-001.14
 title: Implement MCP server setup with tool registration
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-01 15:56'
+updated_date: '2025-11-02 18:57'
 labels:
   - mcp
   - server
