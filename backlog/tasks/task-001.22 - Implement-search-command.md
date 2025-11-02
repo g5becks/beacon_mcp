@@ -1,9 +1,10 @@
 ---
 id: task-001.22
 title: Implement search command
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-01 15:56'
+updated_date: '2025-11-02 19:22'
 labels:
   - cli
   - command
