@@ -15,6 +15,8 @@ type QueryBuilderState = {
   where: WhereClause[]
   orderBy: string[]
   limit?: number
+  offset?: number
+  fullTextQuery?: string
 }
 
 const createInitialState = (table: string): QueryBuilderState => ({
@@ -60,12 +62,8 @@ const serializeWhere = (
   }
 }
 
-const buildSelect = (state: QueryBuilderState, withScore: boolean): string => {
-  if (withScore) {
-    return `SELECT ${state.table}.*, score`
-  }
-  return `SELECT ${state.select}`
-}
+const buildSelect = (state: QueryBuilderState): string =>
+  `SELECT ${state.select}`
 
 const buildFrom = (state: QueryBuilderState): string => `FROM ${state.table}`
 
@@ -83,6 +81,13 @@ const buildLimit = (state: QueryBuilderState): string => {
   return `LIMIT ${state.limit}`
 }
 
+const buildOffset = (state: QueryBuilderState): string => {
+  if (typeof state.offset !== "number") {
+    return ""
+  }
+  return `OFFSET ${state.offset}`
+}
+
 const hasFullText = (state: QueryBuilderState): boolean =>
   state.where.some((entry) => entry.clause.includes("match_bm25"))
 
@@ -92,15 +97,30 @@ const buildSql = (
 ): { sql: string; params: Array<string | number> } => {
   const { clause, params } = serializeWhere(state)
 
-  const select = buildSelect(state, options.withScore)
+  const select = options.withScore
+    ? (() => {
+        if (!state.fullTextQuery) {
+          throw new Error("Full-text query must be defined to include score")
+        }
+        return `SELECT ${state.table}.*, fts_main_knowledge.match_bm25(${state.table}.id, ?) AS score`
+      })()
+    : buildSelect(state)
   const from = buildFrom(state)
   const where = clause ? `WHERE ${clause}` : ""
   const orderBy = buildOrderBy(state)
   const limit = buildLimit(state)
+  const offset = buildOffset(state)
 
-  const sql = [select, from, where, orderBy, limit]
+  const sql = [select, from, where, orderBy, limit, offset]
     .filter((section) => section.length > 0)
     .join(" ")
+
+  if (options.withScore) {
+    return {
+      sql,
+      params: [state.fullTextQuery as string, ...params],
+    }
+  }
 
   return { sql, params }
 }
@@ -168,6 +188,11 @@ export class QueryBuilder {
     return this
   }
 
+  offset(count: number): this {
+    this.state.offset = count
+    return this
+  }
+
   build(): { sql: string; params: Array<string | number> } {
     return buildSql(this.state, { withScore: false })
   }
@@ -218,6 +243,7 @@ export class QueryBuilder {
 
     const params = minScore > 0 ? [query, minScore] : [query]
     appendWhere(this.state, { clause, params })
+    this.state.fullTextQuery = query
     return this
   }
 
@@ -227,6 +253,8 @@ export class QueryBuilder {
     this.state.where = []
     this.state.orderBy = []
     this.state.limit = undefined
+    this.state.offset = undefined
+    this.state.fullTextQuery = undefined
     return this
   }
 }

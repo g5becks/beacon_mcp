@@ -1,6 +1,6 @@
 import { posix } from "node:path"
 
-const ROOT_PATH = "."
+const ROOT_PATH = "/"
 const PATH_SEPARATOR = "/"
 
 const normalizeInputPath = (filePath: string): string => {
@@ -9,7 +9,11 @@ const normalizeInputPath = (filePath: string): string => {
     return ROOT_PATH
   }
 
-  const normalized = posix.normalize(replaced)
+  const withLeadingSlash = replaced.startsWith(PATH_SEPARATOR)
+    ? replaced
+    : `${PATH_SEPARATOR}${replaced}`
+
+  const normalized = posix.normalize(withLeadingSlash)
   return normalized === "" ? ROOT_PATH : normalized
 }
 
@@ -22,28 +26,14 @@ const buildAncestors = (segments: string[]): string[] => {
 
   let current = ""
   for (const segment of segments) {
-    current =
-      current.length === 0 ? segment : `${current}${PATH_SEPARATOR}${segment}`
-    ancestors.push(current)
+    current = `${current}${PATH_SEPARATOR}${segment}`
+    const normalized = current.startsWith(PATH_SEPARATOR)
+      ? current
+      : `${PATH_SEPARATOR}${current}`
+    ancestors.push(posix.normalize(normalized))
   }
 
   return ancestors
-}
-
-const stripLeadingRoot = (path: string): string => {
-  if (path === ROOT_PATH) {
-    return ""
-  }
-
-  if (path.startsWith("./")) {
-    return path.slice(2)
-  }
-
-  if (path.startsWith(`${ROOT_PATH}${PATH_SEPARATOR}`)) {
-    return path.slice(2)
-  }
-
-  return path
 }
 
 export const getPathAncestors = (filePath: string): string[] => {
@@ -53,12 +43,10 @@ export const getPathAncestors = (filePath: string): string[] => {
     return [ROOT_PATH]
   }
 
-  const cleaned = stripLeadingRoot(normalized)
-
-  const segments = cleaned
+  const segments = normalized
     .split(PATH_SEPARATOR)
     .map((segment) => segment.trim())
-    .filter((segment) => segment.length > 0 && segment !== ROOT_PATH)
+    .filter((segment) => segment.length > 0)
 
   return buildAncestors(segments)
 }
