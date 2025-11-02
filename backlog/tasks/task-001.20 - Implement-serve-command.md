@@ -1,9 +1,10 @@
 ---
 id: task-001.20
 title: Implement serve command
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-01 15:56'
+updated_date: '2025-11-02 17:50'
 labels:
   - cli
   - command
