@@ -1,3 +1,4 @@
+import type { McpServer } from "../mcp/server.js"
 import type { ResolvedConfig } from "./config.js"
 import type { Database } from "./database.js"
 import type { Logger } from "./logger.js"
@@ -14,6 +15,7 @@ export type ApplicationContext = {
   logger?: Logger
   database?: Database
   queryEngine?: QueryEngine
+  server?: McpServer
 }
 
 /**
