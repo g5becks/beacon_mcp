@@ -1,9 +1,10 @@
 ---
 id: task-001.16
 title: Implement search-knowledge tool handler
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-01 15:56'
+updated_date: '2025-11-02 15:59'
 labels:
   - mcp
   - tools
