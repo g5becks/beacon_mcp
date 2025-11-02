@@ -3,12 +3,14 @@ import { createRequire } from "node:module"
 import { buildApplication, buildRouteMap, run } from "@stricli/core"
 import type { PackageJson } from "type-fest"
 import { mcpCommand } from "./commands/mcp.js"
+import { searchCommand } from "./commands/search.js"
 import { storeCommand } from "./commands/store.js"
 import { cliLogger } from "./logger.js"
 
 const COMMAND_ROUTES = buildRouteMap({
   routes: {
     mcp: mcpCommand,
+    search: searchCommand,
     store: storeCommand,
   },
   docs: {
