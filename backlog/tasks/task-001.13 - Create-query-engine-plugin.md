@@ -1,9 +1,10 @@
 ---
 id: task-001.13
 title: Create query engine plugin
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-01 15:56'
+updated_date: '2025-11-02 13:35'
 labels:
   - plugin
   - query
