@@ -349,7 +349,7 @@ const buildFullTextWhere = (
   minScore: number,
   clauseResults: ClauseResult[]
 ): { whereClauses: string[]; whereParams: Array<string | number> } => {
-  const whereClauses = ["fts_main_knowledge.match_bm25(k.id, ?) IS NOT NULL"]
+  const whereClauses = ["fts_main_knowledge.match_bm25(k.rowid, ?) IS NOT NULL"]
   const whereParams: Array<string | number> = [searchTerm]
 
   for (const result of clauseResults) {
@@ -360,7 +360,7 @@ const buildFullTextWhere = (
   }
 
   if (minScore > DEFAULT_MIN_SCORE) {
-    whereClauses.push("fts_main_knowledge.match_bm25(k.id, ?) >= ?")
+    whereClauses.push("fts_main_knowledge.match_bm25(k.rowid, ?) >= ?")
     whereParams.push(searchTerm, minScore)
   }
 
@@ -583,10 +583,17 @@ export const createDatabase = async (
 
   const conn = connection
   const dbInstance = instance
+  const lockingEnabled =
+    typeof location === "string" && !location.startsWith(":memory:")
 
   const acquireLock = async (
     operation: string
   ): Promise<() => Promise<void>> => {
+    if (!lockingEnabled) {
+      return async () => {
+        // No-op: in-memory DuckDB instances do not require file locking.
+      }
+    }
     try {
       return await lockfile.lock(location, LOCK_OPTIONS)
     } catch (error) {
@@ -849,7 +856,7 @@ export const createDatabase = async (
     } = prepareFullTextSearch(query, options, searchTerm, minScore)
 
     const sql = `
-      SELECT k.*, fts_main_knowledge.match_bm25(k.id, ?) AS score
+      SELECT k.*, fts_main_knowledge.match_bm25(k.rowid, ?) AS score
       FROM knowledge k
       ${whereSql}
       ORDER BY ${sortBy} ${sortOrder}

@@ -102,7 +102,7 @@ const buildSql = (
         if (!state.fullTextQuery) {
           throw new Error("Full-text query must be defined to include score")
         }
-        return `SELECT ${state.table}.*, fts_main_knowledge.match_bm25(${state.table}.id, ?) AS score`
+        return `SELECT ${state.table}.*, fts_main_knowledge.match_bm25(${state.table}.rowid, ?) AS score`
       })()
     : buildSelect(state)
   const from = buildFrom(state)
@@ -238,8 +238,8 @@ export class QueryBuilder {
   whereFullText(query: string, minScore = 0): this {
     const clause =
       minScore > 0
-        ? `fts_main_knowledge.match_bm25(${this.state.table}.id, ?) >= ?`
-        : `fts_main_knowledge.match_bm25(${this.state.table}.id, ?) IS NOT NULL`
+        ? `fts_main_knowledge.match_bm25(${this.state.table}.rowid, ?) >= ?`
+        : `fts_main_knowledge.match_bm25(${this.state.table}.rowid, ?) IS NOT NULL`
 
     const params = minScore > 0 ? [query, minScore] : [query]
     appendWhere(this.state, { clause, params })

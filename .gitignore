@@ -147,3 +147,8 @@ dfm_src/
 
 # Wireit cache
 .wireit/
+
+# DuckDB artifacts
+*.duckdb*
+*.wal
+*.tmp/
