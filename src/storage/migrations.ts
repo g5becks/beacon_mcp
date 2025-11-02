@@ -6,14 +6,9 @@ const KNOWLEDGE_TABLE_SQL = `
     id VARCHAR PRIMARY KEY,
     type VARCHAR NOT NULL CHECK (type IN ('rule', 'decision', 'details')),
     path VARCHAR NOT NULL,
-    scope VARCHAR CHECK (
-      scope IS NULL OR scope IN ('file', 'function', 'line', 'lineRange', 'named')
-    ),
-    scope_value VARCHAR,
     title VARCHAR NOT NULL,
     content VARCHAR NOT NULL,
-    library VARCHAR,
-    references JSON,
+    metadata JSON,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )
@@ -22,7 +17,6 @@ const KNOWLEDGE_TABLE_SQL = `
 const INDEX_STATEMENTS = [
   "CREATE INDEX IF NOT EXISTS idx_knowledge_type ON knowledge(type)",
   "CREATE INDEX IF NOT EXISTS idx_knowledge_path ON knowledge(path)",
-  "CREATE INDEX IF NOT EXISTS idx_knowledge_library ON knowledge(library)",
 ]
 
 const FTS_STATEMENT = `
