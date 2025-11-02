@@ -1,9 +1,10 @@
 ---
 id: task-001.10
 title: Implement path resolver with ancestor calculation
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-01 15:56'
+updated_date: '2025-11-02 04:12'
 labels:
   - query
   - core
