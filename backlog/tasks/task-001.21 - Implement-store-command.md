@@ -1,9 +1,10 @@
 ---
 id: task-001.21
 title: Implement store command
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-01 15:56'
+updated_date: '2025-11-02 18:40'
 labels:
   - cli
   - command
