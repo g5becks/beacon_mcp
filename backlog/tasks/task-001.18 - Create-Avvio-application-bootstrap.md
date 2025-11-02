@@ -1,9 +1,10 @@
 ---
 id: task-001.18
 title: Create Avvio application bootstrap
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-01 15:56'
+updated_date: '2025-11-02 16:54'
 labels:
   - core
   - architecture
