@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto"
+import { createRequire } from "node:module"
 import { performance } from "node:perf_hooks"
 import { type DuckDBConnection, DuckDBInstance } from "@duckdb/node-api"
 import type {
@@ -44,6 +45,15 @@ const PATH_SEPARATOR = "/"
 const DEFAULT_LIMIT = 20
 const DEFAULT_OFFSET = 0
 const DEFAULT_MIN_SCORE = 0
+
+const require = createRequire(import.meta.url)
+type LockfileModule = typeof import("proper-lockfile")
+const lockfile = require("proper-lockfile") as LockfileModule
+
+const LOCK_OPTIONS = {
+  stale: 10_000,
+  retries: 3,
+} as const
 
 const toError = (error: unknown): Error | undefined =>
   error instanceof Error ? error : undefined
@@ -574,64 +584,108 @@ export const createDatabase = async (
   const conn = connection
   const dbInstance = instance
 
-  const storeKnowledge = async (
-    entry: StoreKnowledgeInput
-  ): Promise<KnowledgeEntry> => {
-    const id = randomUUID()
-    const createdAt = Date.now()
-    const updatedAt = createdAt
-    const createdAtIso = new Date(createdAt).toISOString()
-    const updatedAtIso = new Date(updatedAt).toISOString()
-
-    logger.debug(
-      { id, path: entry.path, type: entry.type },
-      "Storing knowledge entry"
-    )
-
+  const acquireLock = async (
+    operation: string
+  ): Promise<() => Promise<void>> => {
     try {
-      await conn.run("BEGIN TRANSACTION")
-
-      await conn.run(
-        `
-          INSERT INTO knowledge (
-            id, type, path, title, content, metadata, created_at, updated_at
-          )
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        `,
-        [
-          id,
-          entry.type,
-          entry.path,
-          entry.title,
-          entry.content,
-          entry.metadata ? JSON.stringify(entry.metadata) : null,
-          createdAtIso,
-          updatedAtIso,
-        ]
-      )
-
-      await conn.run("COMMIT")
-
-      const stored: KnowledgeEntry = {
-        id,
-        ...entry,
-        metadata: entry.metadata,
-        createdAt,
-        updatedAt,
-        ancestors: buildAncestors(entry.path),
-      }
-
-      logger.info({ id }, "Knowledge entry stored")
-      return stored
+      return await lockfile.lock(location, LOCK_OPTIONS)
     } catch (error) {
-      await safeRollback(conn, logger)
       logger.error(
-        { err: error, path: entry.path },
-        "Failed to store knowledge entry"
+        { err: error, operation, location },
+        "Failed to acquire database lock"
       )
-      throw new DatabaseError("Failed to store knowledge entry", toError(error))
+      throw new DatabaseError("Failed to acquire database lock", toError(error))
     }
   }
+
+  const releaseLock = async (
+    release: () => Promise<void>,
+    operation: string
+  ): Promise<void> => {
+    try {
+      await release()
+    } catch (error) {
+      logger.error(
+        { err: error, operation, location },
+        "Failed to release database lock"
+      )
+    }
+  }
+
+  const withDatabaseLock = async <T>(
+    operation: string,
+    action: () => Promise<T>
+  ): Promise<T> => {
+    const release = await acquireLock(operation)
+    try {
+      return await action()
+    } finally {
+      await releaseLock(release, operation)
+    }
+  }
+
+  const storeKnowledge = async (
+    entry: StoreKnowledgeInput
+  ): Promise<KnowledgeEntry> =>
+    withDatabaseLock("storeKnowledge", async () => {
+      const id = randomUUID()
+      const createdAt = Date.now()
+      const updatedAt = createdAt
+      const createdAtIso = new Date(createdAt).toISOString()
+      const updatedAtIso = new Date(updatedAt).toISOString()
+
+      logger.debug(
+        { id, path: entry.path, type: entry.type },
+        "Storing knowledge entry"
+      )
+
+      try {
+        await conn.run("BEGIN TRANSACTION")
+
+        await conn.run(
+          `
+            INSERT INTO knowledge (
+              id, type, path, title, content, metadata, created_at, updated_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          `,
+          [
+            id,
+            entry.type,
+            entry.path,
+            entry.title,
+            entry.content,
+            entry.metadata ? JSON.stringify(entry.metadata) : null,
+            createdAtIso,
+            updatedAtIso,
+          ]
+        )
+
+        await conn.run("COMMIT")
+
+        const stored: KnowledgeEntry = {
+          id,
+          ...entry,
+          metadata: entry.metadata,
+          createdAt,
+          updatedAt,
+          ancestors: buildAncestors(entry.path),
+        }
+
+        logger.info({ id }, "Knowledge entry stored")
+        return stored
+      } catch (error) {
+        await safeRollback(conn, logger)
+        logger.error(
+          { err: error, path: entry.path },
+          "Failed to store knowledge entry"
+        )
+        throw new DatabaseError(
+          "Failed to store knowledge entry",
+          toError(error)
+        )
+      }
+    })
 
   const getKnowledge = async (id: string): Promise<KnowledgeEntry | null> => {
     try {
@@ -656,50 +710,52 @@ export const createDatabase = async (
   const updateKnowledge = async (
     id: string,
     updates: UpdateKnowledgeInput
-  ): Promise<KnowledgeEntry> => {
-    if (Object.keys(updates).length === 0) {
+  ): Promise<KnowledgeEntry> =>
+    withDatabaseLock("updateKnowledge", async () => {
+      if (Object.keys(updates).length === 0) {
+        const existing = await getKnowledge(id)
+        if (!existing) {
+          throw new KnowledgeNotFoundError(id, "id")
+        }
+        return existing
+      }
+
       const existing = await getKnowledge(id)
       if (!existing) {
         throw new KnowledgeNotFoundError(id, "id")
       }
-      return existing
-    }
 
-    const existing = await getKnowledge(id)
-    if (!existing) {
-      throw new KnowledgeNotFoundError(id, "id")
-    }
+      const merged = mergeKnowledgeEntry(existing, updates)
 
-    const merged = mergeKnowledgeEntry(existing, updates)
+      logger.debug({ id }, "Updating knowledge entry")
 
-    logger.debug({ id }, "Updating knowledge entry")
+      try {
+        await executeKnowledgeUpdate(conn, logger, id, merged)
+        logger.info({ id }, "Knowledge entry updated")
+        return merged
+      } catch (error) {
+        logger.error({ err: error, id }, "Failed to update knowledge entry")
+        throw new DatabaseError(
+          "Failed to update knowledge entry",
+          toError(error)
+        )
+      }
+    })
 
-    try {
-      await executeKnowledgeUpdate(conn, logger, id, merged)
-      logger.info({ id }, "Knowledge entry updated")
-      return merged
-    } catch (error) {
-      logger.error({ err: error, id }, "Failed to update knowledge entry")
-      throw new DatabaseError(
-        "Failed to update knowledge entry",
-        toError(error)
-      )
-    }
-  }
-
-  const deleteKnowledge = async (id: string): Promise<void> => {
-    logger.debug({ id }, "Deleting knowledge entry")
-    try {
-      await conn.run("DELETE FROM knowledge WHERE id = ?", [id])
-      logger.info({ id }, "Knowledge entry deleted")
-    } catch (error) {
-      logger.error({ err: error, id }, "Failed to delete knowledge entry")
-      throw new DatabaseError(
-        "Failed to delete knowledge entry",
-        toError(error)
-      )
-    }
-  }
+  const deleteKnowledge = async (id: string): Promise<void> =>
+    withDatabaseLock("deleteKnowledge", async () => {
+      logger.debug({ id }, "Deleting knowledge entry")
+      try {
+        await conn.run("DELETE FROM knowledge WHERE id = ?", [id])
+        logger.info({ id }, "Knowledge entry deleted")
+      } catch (error) {
+        logger.error({ err: error, id }, "Failed to delete knowledge entry")
+        throw new DatabaseError(
+          "Failed to delete knowledge entry",
+          toError(error)
+        )
+      }
+    })
 
   const listKnowledge = async (
     type?: KnowledgeType
