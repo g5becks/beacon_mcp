@@ -41,6 +41,9 @@ importers:
       glob:
         specifier: ^11.0.3
         version: 11.0.3
+      minimatch:
+        specifier: ^10.1.1
+        version: 10.1.1
       pino:
         specifier: ^10.1.0
         version: 10.1.0

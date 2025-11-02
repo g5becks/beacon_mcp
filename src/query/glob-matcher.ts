@@ -1,4 +1,4 @@
-import { Minimatch } from "glob/minimatch.js"
+import { Minimatch } from "minimatch"
 
 const LIKE_WILDCARD = "%"
 const LIKE_SINGLE = "_"
