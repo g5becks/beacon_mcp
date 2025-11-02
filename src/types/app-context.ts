@@ -1,4 +1,5 @@
 import type { ResolvedConfig } from "./config.js"
+import type { Database } from "./database.js"
 import type { Logger } from "./logger.js"
 
 /**
@@ -10,6 +11,7 @@ export type ApplicationContext = {
   isReady: boolean
   config?: ResolvedConfig
   logger?: Logger
+  database?: Database
 }
 
 /**
