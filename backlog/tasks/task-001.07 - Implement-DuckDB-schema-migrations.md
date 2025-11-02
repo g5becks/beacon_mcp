@@ -1,9 +1,10 @@
 ---
 id: task-001.07
 title: Implement DuckDB schema migrations
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-01 15:56'
+updated_date: '2025-11-02 01:12'
 labels:
   - database
   - schema
