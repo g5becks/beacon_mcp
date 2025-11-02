@@ -1,9 +1,10 @@
 ---
 id: task-001.12
 title: Implement SQL query builder
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-01 15:56'
+updated_date: '2025-11-02 12:47'
 labels:
   - query
   - sql
