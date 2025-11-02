@@ -1,9 +1,10 @@
 ---
 id: task-001.24
 title: Write unit tests for core modules
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-01 15:57'
+updated_date: '2025-11-02 21:33'
 labels:
   - testing
   - quality
