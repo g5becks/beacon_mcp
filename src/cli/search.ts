@@ -1,14 +1,14 @@
 import { buildCommand } from "@stricli/core"
-import { startApp } from "../../app.js"
-import type { KnowledgeEntry } from "../../types/knowledge.js"
+import { startApp } from "../app.js"
+import type { KnowledgeEntry } from "../types/knowledge.js"
 import {
   KnowledgePathSchema,
   type KnowledgeType,
   KnowledgeTypeSchema,
-} from "../../types/knowledge.js"
-import type { SearchResult, SearchResults } from "../../types/search.js"
-import { SearchQuerySchema } from "../../types/search.js"
-import { cliLogger } from "../logger.js"
+} from "../types/knowledge.js"
+import type { SearchResult, SearchResults } from "../types/search.js"
+import { SearchQuerySchema } from "../types/search.js"
+import { cliLogger } from "./logger.js"
 
 type SearchFlags = {
   path?: string

@@ -1,8 +1,8 @@
 import { buildCommand } from "@stricli/core"
-import { startApp } from "../../app.js"
-import type { KnowledgeEntry, KnowledgeType } from "../../types/knowledge.js"
-import { KnowledgeTypeSchema } from "../../types/knowledge.js"
-import { cliLogger } from "../logger.js"
+import { startApp } from "../app.js"
+import type { KnowledgeEntry, KnowledgeType } from "../types/knowledge.js"
+import { KnowledgeTypeSchema } from "../types/knowledge.js"
+import { cliLogger } from "./logger.js"
 
 type ListFlags = {
   type?: KnowledgeType
@@ -37,7 +37,7 @@ const formatEntry = (entry: KnowledgeEntry, index: number): string => {
 
   lines.push("", summarizeContent(entry.content))
 
-  return `${lines.join("\n")}\n`
+  return `${lines.join("\n")}`
 }
 
 const formatResults = (
@@ -58,7 +58,7 @@ const formatResults = (
   }
 
   const body = entries
-    .map((entry, index) => formatEntry(entry, index + 1))
+    .map((entry, index) => `${formatEntry(entry, index + 1)}\n`)
     .join("\n")
 
   return `${header.join("\n")}\n\n${body}`

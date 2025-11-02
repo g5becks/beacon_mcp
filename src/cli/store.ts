@@ -1,8 +1,8 @@
 import { buildCommand } from "@stricli/core"
-import { startApp } from "../../app.js"
-import type { KnowledgeType } from "../../types/knowledge.js"
-import { KnowledgeTypeSchema } from "../../types/knowledge.js"
-import { cliLogger } from "../logger.js"
+import { startApp } from "../app.js"
+import type { KnowledgeType } from "../types/knowledge.js"
+import { KnowledgeTypeSchema } from "../types/knowledge.js"
+import { cliLogger } from "./logger.js"
 
 type StoreFlags = {
   library?: string
@@ -80,7 +80,7 @@ Paths must start with a forward slash (/) and use Unix-style separators.
       },
       {
         input:
-          "store details /src/services/payments 'Stripe integration notes' '# Notes\\nWe use stripe 2024 API' --library stripe",
+          "store details /src/services/payments 'Stripe integration notes' '# Notes\nWe use stripe 2024 API' --library stripe",
         brief: "Store documentation details for a path",
       },
     ],

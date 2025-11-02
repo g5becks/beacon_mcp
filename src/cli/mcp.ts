@@ -1,7 +1,7 @@
 import { buildCommand } from "@stricli/core"
-import { startApp } from "../../app.js"
-import type { CliConfig } from "../../types/cli.js"
-import { cliLogger } from "../logger.js"
+import { startApp } from "../app.js"
+import type { CliConfig } from "../types/cli.js"
+import { cliLogger } from "./logger.js"
 
 type McpFlags = {
   env?: string
