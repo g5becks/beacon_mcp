@@ -1,9 +1,10 @@
 ---
 id: task-001.08
 title: Implement database factory with CRUD operations
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-01 15:56'
+updated_date: '2025-11-02 03:37'
 labels:
   - database
   - core
