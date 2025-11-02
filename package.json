@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "bin": {
+    "beacon": "dist/cli/index.js"
+  },
   "scripts": {
     "clean": "wireit",
     "build": "wireit",
@@ -19,9 +22,7 @@
     "lint": "wireit",
     "fix": "wireit",
     "lint:file": "wireit",
-    "lint:circular": "wireit",
-    "install": "pnpm install",
-    "install:frozen": "pnpm install --frozen-lockfile"
+    "lint:circular": "wireit"
   },
   "keywords": [],
   "author": "",
@@ -51,7 +52,7 @@
   },
   "dependencies": {
     "@duckdb/node-api": "1.4.1-r.4",
-    "@modelcontextprotocol/sdk": "^1.20.2",
+    "@modelcontextprotocol/sdk": "npm:@socotra/modelcontextprotocol-sdk@^1.21.0",
     "@stricli/auto-complete": "^1.2.4",
     "@stricli/core": "^1.2.4",
     "avvio": "^9.1.0",
