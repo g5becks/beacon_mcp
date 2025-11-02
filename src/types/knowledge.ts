@@ -30,10 +30,10 @@ import {
  * Represents the different types of knowledge that can be stored:
  * - rule: Rules, guidelines, or best practices
  * - decision: Architectural decisions or choices made
- * - document: Documentation, references, or general information
+ * - details: Implementation notes, project-specific documentation, or references
  */
 export const KnowledgeTypeSchema = z.enum(KNOWLEDGE_TYPES, {
-  error: "Knowledge type must be one of: rule, decision, or document",
+  error: "Knowledge type must be one of: rule, decision, or details",
 })
 export type KnowledgeType = z.infer<typeof KnowledgeTypeSchema>
 

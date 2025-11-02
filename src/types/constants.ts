@@ -62,7 +62,7 @@ export const MAX_METADATA_ENTRIES = 100
 /**
  * Supported knowledge entry types
  */
-export const KNOWLEDGE_TYPES = ["rule", "decision", "document"] as const
+export const KNOWLEDGE_TYPES = ["rule", "decision", "details"] as const
 
 /**
  * Default limit for search results
