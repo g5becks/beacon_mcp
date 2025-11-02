@@ -21,6 +21,8 @@ import {
   TOOL_DEFINITIONS,
 } from "../types/mcp-tools.js"
 import type { QueryEngine } from "../types/query-engine.js"
+import { createGetKnowledgeHandler } from "./handlers/get-knowledge.js"
+import { createListKnowledgeHandler } from "./handlers/list-knowledge.js"
 import { createSearchKnowledgeHandler } from "./handlers/search-knowledge.js"
 import { createStoreKnowledgeHandler } from "./handlers/store-knowledge.js"
 import { createErrorResult, toToolError } from "./utils/results.js"
@@ -89,15 +91,6 @@ const missingToolResult = (toolName: string): CallToolResult =>
     details: { tool: toolName },
   })
 
-const notImplementedHandler =
-  <Input>(toolName: string): McpToolHandler<Input> =>
-  async () =>
-    createErrorResult({
-      code: "INVALID_INPUT",
-      message: `${toolName} handler not implemented`,
-      details: { tool: toolName },
-    })
-
 type ToolInvocation<Input> = {
   name: string
   schema: ZodType<Input>
@@ -145,10 +138,10 @@ const buildHandlers = (options: CreateMcpServerOptions): McpToolHandlers => {
     createSearchKnowledgeHandler({ queryEngine, logger })
 
   const getHandler =
-    handlers?.getKnowledge ?? notImplementedHandler(TOOL_DEFINITIONS.get.name)
+    handlers?.getKnowledge ?? createGetKnowledgeHandler({ database, logger })
 
   const listHandler =
-    handlers?.listKnowledge ?? notImplementedHandler(TOOL_DEFINITIONS.list.name)
+    handlers?.listKnowledge ?? createListKnowledgeHandler({ database, logger })
 
   return {
     storeKnowledge: storeHandler,
