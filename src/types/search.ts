@@ -17,7 +17,11 @@ import {
   MAX_SNIPPET_LENGTH,
   MIN_SNIPPET_LENGTH,
 } from "./constants.js"
-import { KnowledgePathSchema, KnowledgeTypeSchema } from "./knowledge.js"
+import {
+  KnowledgeEntrySchema,
+  KnowledgePathSchema,
+  KnowledgeTypeSchema,
+} from "./knowledge.js"
 
 const includesDirectoryTraversal = (value: string): boolean =>
   value.includes(DIRECTORY_TRAVERSAL_SEQUENCE)
@@ -270,11 +274,11 @@ export type ContentSearchQuery = z.infer<typeof ContentSearchQuerySchema>
  *
  * Individual search result with metadata about the match.
  */
-export const SearchResultEntrySchema = z.object({
+export const SearchResultSchema = z.object({
   /**
    * The knowledge entry that matched
    */
-  entry: z.any(), // Will be KnowledgeEntry type
+  entry: KnowledgeEntrySchema,
 
   /**
    * Relevance score (0-1, higher is more relevant)
@@ -301,7 +305,7 @@ export const SearchResultEntrySchema = z.object({
    */
   matchExplanation: z.string().optional(),
 })
-export type SearchResultEntry = z.infer<typeof SearchResultEntrySchema>
+export type SearchResult = z.infer<typeof SearchResultSchema>
 
 /**
  * Search results schema
@@ -312,7 +316,7 @@ export const SearchResultsSchema = z.object({
   /**
    * Array of search results
    */
-  results: z.array(SearchResultEntrySchema),
+  results: z.array(SearchResultSchema),
 
   /**
    * Total number of matching entries (not limited by pagination)
@@ -355,7 +359,7 @@ export const PathSearchResultsSchema = z.object({
   /**
    * Array of knowledge entries matching the path criteria
    */
-  entries: z.array(z.any()), // Will be KnowledgeEntry type
+  entries: z.array(KnowledgeEntrySchema),
 
   /**
    * Total number of matching entries

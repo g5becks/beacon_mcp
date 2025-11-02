@@ -5,8 +5,10 @@
  */
 
 import type { Logger } from "pino"
+import type { Environment } from "./config.js"
 import type {
   KnowledgeEntry,
+  KnowledgeType,
   StoreKnowledgeInput,
   UpdateKnowledgeInput,
 } from "./knowledge.js"
@@ -27,6 +29,60 @@ export type DatabaseConfig = {
   location: string
   /** Logger instance */
   logger: Logger
+  /** Application environment */
+  environment: Environment
+}
+
+/**
+ * Search filter options
+ */
+export type SearchFilters = {
+  /** Filter results by knowledge type */
+  type?: KnowledgeType
+  /** Restrict results to a specific path */
+  path?: string
+  /** Glob pattern filter */
+  pattern?: string
+  /** Include ancestor paths in results */
+  includeAncestors?: boolean
+}
+
+/**
+ * Search options returning from full-text search queries.
+ */
+export type SearchOptions = {
+  /** Maximum number of results to return */
+  limit?: number
+  /** Number of results to skip */
+  offset?: number
+  /** Minimum relevance score threshold */
+  minScore?: number
+  /** Include content snippets in the response */
+  includeSnippets?: boolean
+  /** Length of content snippets when included */
+  snippetLength?: number
+  /** Highlight matching terms within snippets */
+  highlightMatches?: boolean
+  /** Additional filters applied to the search */
+  filters?: SearchFilters
+}
+
+/**
+ * Search result metadata for content-based queries.
+ */
+export type SearchResult = {
+  /** Matching knowledge entry */
+  entry: KnowledgeEntry
+  /** Relevance score between 0 and 1 */
+  score: number
+  /** Fields that contributed to the match */
+  matchedFields: Array<"path" | "title" | "content" | "metadata">
+  /** Matched terms returned by the search engine */
+  matchedTerms?: string[]
+  /** Content snippets surrounding matches */
+  snippets?: string[]
+  /** Human-readable explanation for the match */
+  matchExplanation?: string
 }
 
 /**
@@ -86,7 +142,15 @@ export type Database = {
    * @param query - Content search criteria
    * @returns Search results with relevance scoring
    */
-  searchByContent(query: SearchQuery): Promise<SearchResults>
+  searchByContent(
+    query: SearchQuery,
+    options?: SearchOptions
+  ): Promise<SearchResults>
+
+  /**
+   * List knowledge entries optionally filtered by type
+   */
+  listKnowledge(type?: KnowledgeType): Promise<KnowledgeEntry[]>
 
   /**
    * Close database connection and cleanup resources
